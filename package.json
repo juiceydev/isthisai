@@ -16,5 +16,6 @@
     "@astrojs/node": "^11.1.9",
     "astro": "^7.4.5",
     "sharp": "^0.35.5"
-  }
+  },
+  "license": "MIT"
 }

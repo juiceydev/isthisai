@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
 import Row from '../components/Row.astro';
 import { listRecent } from '../lib/store';
 
@@ -50,17 +51,7 @@ const message =
             placeholder="paste a url"
           />
           <button type="submit" aria-label="send it over">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M7 17 17 7M9 7h8v8"></path>
-            </svg>
+            <Icon name="arrowBigUpRight" />
           </button>
         </form>
 
