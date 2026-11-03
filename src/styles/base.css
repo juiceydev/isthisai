@@ -154,9 +154,9 @@ button {
 
 .ai {
   font-family: 'Bulky Pixels', 'Work Sans', sans-serif;
-  font-size: 0.62em;
+  font-size: 0.82em;
   font-weight: 400;
-  letter-spacing: 0;
+  letter-spacing: -0.14em;
   margin-left: 0.06em;
 }
 
