@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { submit } from '../../lib/store';
+import { findCheck, submit } from '../../lib/store';
+import { notifyAdmins } from '../../lib/push';
 import { isBanned } from '../../lib/bans';
 import { clientIp } from '../../lib/ip';
 
@@ -32,5 +33,13 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   const form = await request.formData().catch(() => null);
   if (!form) return back('/?error=bad');
 
-  return back((await submit(form.get('url'), ip)) ? '/?sent=1' : '/?error=bad');
+  const sent = await submit(form.get('url'), ip);
+  if (!sent) return back('/?error=bad');
+
+  if (sent.pending) {
+    const check = findCheck(sent.id);
+    if (check) void notifyAdmins(check).catch(() => {});
+  }
+
+  return back(sent.pending ? `/?sent=1&id=${sent.id}&watch=1` : '/?sent=1');
 };

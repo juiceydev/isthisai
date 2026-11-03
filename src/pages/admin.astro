@@ -10,6 +10,7 @@ const pending = open ? listPending() : [];
 const checked = open ? listChecked(100) : [];
 const bans = open ? listBans() : [];
 const error = Astro.url.searchParams.get('error');
+const pushKey = process.env.VAPID_PUBLIC_KEY ?? '';
 ---
 
 <Base title="is this ai admin" description="admin">
@@ -20,6 +21,13 @@ const error = Astro.url.searchParams.get('error');
           <p class="stale" id="stale" hidden>
             new activity. <a href="/admin">refresh</a>
           </p>
+        )
+      }
+      {
+        open && (
+          <button class="ghost" id="notify-admin" type="button" data-key={pushKey} hidden>
+            notify me
+          </button>
         )
       }
       {

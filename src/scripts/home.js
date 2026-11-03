@@ -1,3 +1,5 @@
+import { enablePush, pushable } from './push.js';
+
 const feed = document.getElementById('feed');
 const button = document.querySelector('.more-button');
 
@@ -70,4 +72,16 @@ if (feed) {
   };
   tick();
   setInterval(tick, 15000);
+}
+
+const notify = document.getElementById('notify');
+
+if (notify && notify.dataset.key && pushable()) {
+  notify.hidden = false;
+  notify.addEventListener('click', async () => {
+    notify.disabled = true;
+    const on = await enablePush(notify.dataset.key, { id: notify.dataset.id });
+    notify.textContent = on ? 'notifications on' : 'notifications are not available';
+    notify.disabled = on;
+  });
 }

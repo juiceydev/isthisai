@@ -11,6 +11,9 @@ const checks = page.slice(0, PAGE);
 const params = Astro.url.searchParams;
 const sent = params.get('sent') === '1';
 const error = params.get('error');
+const watch =
+  params.get('watch') === '1' ? (params.get('id') ?? '').replace(/[^a-f0-9]/g, '').slice(0, 32) : '';
+const pushKey = process.env.VAPID_PUBLIC_KEY ?? '';
 
 const message =
   error === 'rate'
@@ -64,6 +67,20 @@ const message =
             message
           )}
         </p>
+        {
+          watch && (
+            <button
+              class="notify"
+              id="notify"
+              type="button"
+              data-id={watch}
+              data-key={pushKey}
+              hidden
+            >
+              notify me when it's checked
+            </button>
+          )
+        }
       </div>
     </main>
 

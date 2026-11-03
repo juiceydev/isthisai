@@ -1,3 +1,5 @@
+import { enablePush, pushable } from './push.js';
+
 const stale = document.getElementById('stale');
 
 if (stale) {
@@ -17,3 +19,15 @@ document.addEventListener('click', (event) => {
   const target = event.target.closest('[data-confirm]');
   if (target && !confirm(target.dataset.confirm)) event.preventDefault();
 });
+
+const notifyAdmin = document.getElementById('notify-admin');
+
+if (notifyAdmin && notifyAdmin.dataset.key && pushable()) {
+  notifyAdmin.hidden = false;
+  notifyAdmin.addEventListener('click', async () => {
+    notifyAdmin.disabled = true;
+    const on = await enablePush(notifyAdmin.dataset.key, { admin: true });
+    notifyAdmin.textContent = on ? 'notifications on' : 'notifications are not available';
+    notifyAdmin.disabled = on;
+  });
+}

@@ -115,14 +115,20 @@ export const revision = (): number => {
 export const findCheck = (id: string): Check | undefined =>
   read().find((check) => check.id === id);
 
-export const submit = async (rawUrl: unknown, ip = ''): Promise<boolean> => {
+export interface Submitted {
+  id: string;
+  pending: boolean;
+}
+
+export const submit = async (rawUrl: unknown, ip = ''): Promise<Submitted | null> => {
   const url = cleanUrl(rawUrl);
-  if (!url) return false;
+  if (!url) return null;
   const checks = read();
   const key = urlKey(url);
   const same = checks.filter((check) => urlKey(check.url) === key);
 
-  if (same.some((check) => check.verdict === 'pending')) return true;
+  const waiting = same.find((check) => check.verdict === 'pending');
+  if (waiting) return { id: waiting.id, pending: true };
 
   const signed = same
     .filter((check) => check.checkedAt && check.verdict !== 'pending')
@@ -130,13 +136,15 @@ export const submit = async (rawUrl: unknown, ip = ''): Promise<boolean> => {
 
   if (signed) {
     const now = new Date().toISOString();
-    checks.push({ ...signed, id: randomBytes(6).toString('hex'), url, submittedAt: now, checkedAt: now });
+    const id = randomBytes(6).toString('hex');
+    checks.push({ ...signed, id, url, submittedAt: now, checkedAt: now });
     write(checks);
-    return true;
+    return { id, pending: false };
   }
 
+  const id = randomBytes(6).toString('hex');
   checks.push({
-    id: randomBytes(6).toString('hex'),
+    id,
     url,
     ...(ip ? { ip } : {}),
     ...(await metaFor(url)),
@@ -148,7 +156,7 @@ export const submit = async (rawUrl: unknown, ip = ''): Promise<boolean> => {
     checkedAt: null,
   });
   write(checks);
-  return true;
+  return { id, pending: true };
 };
 
 export const save = async (form: FormData): Promise<boolean> => {
