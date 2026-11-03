@@ -1,0 +1,99 @@
+---
+import Base from '../layouts/Base.astro';
+import Row from '../components/Row.astro';
+import { listRecent } from '../lib/store';
+
+const PAGE = 8;
+const page = listRecent(PAGE + 1);
+const hasMore = page.length > PAGE;
+const checks = page.slice(0, PAGE);
+const params = Astro.url.searchParams;
+const sent = params.get('sent') === '1';
+const error = params.get('error');
+
+const message =
+  error === 'rate'
+    ? 'too many links from you - give it an hour.'
+    : error === 'blocked'
+      ? 'you are blocked from sending links.'
+      : error
+        ? "that doesn't look like a link."
+        : '';
+---
+
+<Base>
+  <div class="site">
+    <main class="hero">
+      <div class="hero-inner">
+        <div class="title-row">
+          <h1>Is this <span class="ai">AI</span>?</h1>
+          <a class="byline" href="https://juicey.dev" target="_blank" rel="noopener noreferrer">
+            by juiceydev
+          </a>
+        </div>
+        <p class="blurb">
+          A human reviewed (me) AI detector because I am tired of people not knowing if something
+          seems AI or Not.
+        </p>
+
+        <form class="ask" method="post" action="/api/submit">
+          <label class="sr-only" for="url">url of the thing you're unsure about</label>
+          <input
+            id="url"
+            name="url"
+            type="url"
+            required
+            inputmode="url"
+            autocomplete="off"
+            spellcheck="false"
+            enterkeyhint="send"
+            placeholder="paste a url"
+          />
+          <button type="submit" aria-label="send it over">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M7 17 17 7M9 7h8v8"></path>
+            </svg>
+          </button>
+        </form>
+
+        <p class="flash" role="status" aria-live="polite">
+          {sent ? (
+            <>
+              <strong>sent!</strong> i will be checking it out.
+            </>
+          ) : (
+            message
+          )}
+        </p>
+      </div>
+    </main>
+
+    <footer class="rail" aria-labelledby="recent-heading">
+      <div class="rail-head">
+        <h2 class="rail-label" id="recent-heading">recently checked</h2>
+      </div>
+      <ol class="feed" id="feed" role="list">
+        {checks.map((check) => <Row check={check} />)}
+      </ol>
+      {
+        hasMore && (
+          <div class="more">
+            <button class="more-button" type="button" aria-controls="feed" hidden>
+              load more
+            </button>
+          </div>
+        )
+      }
+    </footer>
+  </div>
+
+  <script>import '../scripts/home.js';</script>
+</Base>

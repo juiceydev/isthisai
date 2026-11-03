@@ -1,0 +1,14 @@
+isthisai.juicey.dev {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+		resolvers 1.1.1.1
+	}
+
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:4330
+
+	log {
+		output stderr
+		level INFO
+	}
+}

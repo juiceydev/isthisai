@@ -1,0 +1,20 @@
+{
+  "name": "isthisai",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "start": "node --env-file=.env scripts/start.mjs"
+  },
+  "dependencies": {
+    "@astrojs/node": "^11.1.9",
+    "astro": "^7.4.5",
+    "sharp": "^0.35.5"
+  }
+}

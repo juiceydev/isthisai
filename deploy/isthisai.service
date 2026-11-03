@@ -1,0 +1,14 @@
+[Unit]
+Description=is this ai
+After=network.target
+
+[Service]
+Type=simple
+User=juiceydev
+WorkingDirectory=/home/juiceydev/isthisai
+ExecStart=/usr/bin/node --env-file=.env scripts/start.mjs
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

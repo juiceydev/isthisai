@@ -1,0 +1,117 @@
+---
+import Base from '../layouts/Base.astro';
+import ItemForm from '../components/ItemForm.astro';
+import { isAdmin } from '../lib/auth';
+import { listBans } from '../lib/bans';
+import { listChecked, listPending } from '../lib/store';
+
+const open = isAdmin(Astro.request);
+const pending = open ? listPending() : [];
+const checked = open ? listChecked(100) : [];
+const bans = open ? listBans() : [];
+const error = Astro.url.searchParams.get('error');
+---
+
+<Base title="is this ai admin" description="admin">
+  <div class="page">
+    <header class="top">
+      {
+        open && (
+          <p class="stale" id="stale" hidden>
+            new activity. <a href="/admin">refresh</a>
+          </p>
+        )
+      }
+      {
+        open && (
+          <form method="post" action="/api/admin/logout">
+            <button class="link">log out</button>
+          </form>
+        )
+      }
+    </header>
+
+    {
+      !open ? (
+        <section class="login">
+          {error && <p class="flash">wrong key.</p>}
+          <form method="post" action="/api/admin/login">
+            <input
+              type="password"
+              name="key"
+              required
+              autofocus
+              placeholder="admin key"
+              aria-label="Admin key"
+            />
+            <button class="solid">unlock</button>
+          </form>
+        </section>
+      ) : (
+        <>
+          <section class="block">
+            <h2>add an item</h2>
+            <p class="hint">for something you verified outside a submission.</p>
+            <ItemForm defaultVerdict="vibecoded" />
+          </section>
+
+          <section class="block">
+            <h2>
+              queue <span class="count">{pending.length}</span>
+            </h2>
+            {pending.length === 0 ? (
+              <p class="empty">nothing waiting.</p>
+            ) : (
+              pending.map((item) => <ItemForm item={item} />)
+            )}
+          </section>
+
+          <section class="block">
+            <h2>
+              published <span class="count">{checked.length}</span>
+            </h2>
+            {checked.length === 0 ? (
+              <p class="empty">nothing published yet.</p>
+            ) : (
+              checked.map((item) => <ItemForm item={item} />)
+            )}
+          </section>
+
+          <section class="block">
+            <h2>
+              blocked senders <span class="count">{bans.length}</span>
+            </h2>
+            <form class="ban-add" method="post" action="/api/admin/bans">
+              <input
+                name="ip"
+                required
+                inputmode="text"
+                placeholder="ip address"
+                aria-label="IP address to block"
+              />
+              <button class="ghost" name="action" value="ban">block</button>
+            </form>
+            {bans.length === 0 ? (
+              <p class="empty">nobody blocked.</p>
+            ) : (
+              <form class="bans" method="post" action="/api/admin/bans">
+                <input type="hidden" name="action" value="unban" />
+                {bans.map((entry) => (
+                  <div class="ban">
+                    <code>{entry.ip}</code>
+                    <button class="ghost" name="ip" value={entry.ip}>
+                      unblock
+                    </button>
+                  </div>
+                ))}
+              </form>
+            )}
+          </section>
+        </>
+      )
+    }
+  </div>
+
+  <script>import '../scripts/admin.js';</script>
+</Base>
+

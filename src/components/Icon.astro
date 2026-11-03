@@ -1,0 +1,21 @@
+---
+import alert from '../icons/alert.svg?raw';
+import coder from '../icons/coder.svg?raw';
+import diffusion from '../icons/diffusion.svg?raw';
+import help from '../icons/help.svg?raw';
+import hourglass from '../icons/hourglass.svg?raw';
+import smile from '../icons/smile.svg?raw';
+import video from '../icons/video.svg?raw';
+
+const icons = { alert, coder, diffusion, help, hourglass, smile, video };
+
+type IconName = keyof typeof icons;
+
+interface Props {
+  name: IconName;
+}
+
+const { name } = Astro.props;
+---
+
+<Fragment set:html={icons[name]} />

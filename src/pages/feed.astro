@@ -1,0 +1,13 @@
+---
+import Row from '../components/Row.astro';
+import { listRecent } from '../lib/store';
+
+export const partial = true;
+Astro.response.headers.set('X-Robots-Tag', 'noindex');
+
+const PAGE = 8;
+const after = Astro.url.searchParams.get('after');
+const checks = listRecent(PAGE, after);
+---
+
+{checks.map((check) => <Row check={check} />)}
