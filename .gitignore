@@ -2,5 +2,4 @@ node_modules/
 dist/
 .env
 data/
-src/assets/fff-forward.woff2
 .astro/
